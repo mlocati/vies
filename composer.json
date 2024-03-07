@@ -1,0 +1,66 @@
+{
+    "name": "mlocati/vies",
+    "description": "A PHP library to validate European VAT codes",
+    "keywords": [
+        "vies",
+        "vies-on-the-web",
+        "vies-on-web",
+        "vat",
+        "vatid",
+        "vat code",
+        "vat id",
+        "vat number",
+        "verify",
+        "validate",
+        "validation",
+        "check",
+        "eu",
+        "europe",
+        "european"
+    ],
+    "type": "library",
+    "authors": [
+        {
+            "name": "Michele Locati",
+            "email": "michele@locati.it"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^5.5 || ^7 || ^8",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8 || ^6.5 || ^8.5",
+        "symfony/process": "^3.4 || ^7"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "MLocati\\Vies\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MLocati\\Vies\\Test\\Service\\": "test/service/",
+            "MLocati\\Vies\\Test\\": "test/helpers/"
+        }
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "To use the Guzzle HTTP adapter",
+        "ext-curl": "To use the cURL HTTP adapter"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/mlocati"
+        },
+        {
+            "type": "other",
+            "url": "https://paypal.me/mlocati"
+        }
+    ]
+}
