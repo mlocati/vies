@@ -68,6 +68,7 @@ class HttpAdaptersTest extends TestCase
     {
         $this->checkStatus($vies);
         $this->checkGoodVatNumber($vies);
+        $this->checkWrongVatNumber($vies);
         $this->checkWrongCountryCode($vies);
     }
 
@@ -123,6 +124,46 @@ class HttpAdaptersTest extends TestCase
         $this->assertMatchRegExp('/\bFerrari\b/i', $response->getName());
         $this->assertIsString($response->getAddress());
         $this->assertMatchRegExp('/\bModena\b/i', $response->getAddress());
+        $this->assertIsString($response->getTraderName());
+        $this->assertIsString($response->getTraderStreet());
+        $this->assertIsString($response->getTraderPostalCode());
+        $this->assertIsString($response->getTraderCity());
+        $this->assertIsString($response->getTraderCompanyType());
+        $matches = [
+            Vies\CheckVat\Response::MATCH_VALID,
+            Vies\CheckVat\Response::MATCH_INVALID,
+            Vies\CheckVat\Response::MATCH_NOT_PROCESSED,
+        ];
+        $this->assertContains($response->getTraderNameMatch(), $matches);
+        $this->assertContains($response->getTraderStreetMatch(), $matches);
+        $this->assertContains($response->getTraderPostalCodeMatch(), $matches);
+        $this->assertContains($response->getTraderCityMatch(), $matches);
+        $this->assertContains($response->getTraderCompanyTypeMatch(), $matches);
+    }
+
+    private function checkWrongVatNumber(ClientWrapper $vies)
+    {
+        $request = new Vies\CheckVat\Request();
+        $request->setCountryCode('IT')->setVatNumber('0015956036');
+        $now = new DateTimeImmutable('now');
+        $beforeRequest = $now->sub(new DateInterval('PT1S'));
+        $response = $vies->checkVatNumber($request);
+        $now = new DateTimeImmutable('now');
+        $afterRequest = $now->add(new DateInterval('PT1S'));
+        $this->assertInstanceOf(Vies\CheckVat\Response::class, $response);
+        $this->assertSame('IT', $response->getCountryCode());
+        $this->assertSame('0015956036', $response->getVatNumber());
+        $requestDate = $response->getRequestDate();
+        $this->assertInstanceOf(DateTimeImmutable::class, $requestDate);
+        $this->assertSame($beforeRequest->getTimezone()->getName(), $requestDate->getTimezone()->getName());
+        $this->assertGreaterThanOrEqual($beforeRequest, $requestDate);
+        $this->assertLessThanOrEqual($afterRequest, $requestDate);
+        $this->assertSame(false, $response->isValid());
+        $this->assertIsString($response->getRequestIdentifier());
+        $this->assertIsString($response->getName());
+        $this->assertMatchRegExp('/^\W*/i', $response->getName());
+        $this->assertIsString($response->getAddress());
+        $this->assertMatchRegExp('/^\W*$/i', $response->getAddress());
         $this->assertIsString($response->getTraderName());
         $this->assertIsString($response->getTraderStreet());
         $this->assertIsString($response->getTraderPostalCode());
