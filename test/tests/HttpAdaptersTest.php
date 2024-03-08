@@ -8,6 +8,7 @@ use MLocati\Vies\Http\Adapter;
 use MLocati\Vies\Test\Service\TestCase;
 use MLocati\Vies\Test\Service\ClientWrapper;
 use MLocati\Vies;
+use RuntimeException;
 
 class HttpAdaptersTest extends TestCase
 {
@@ -66,7 +67,8 @@ class HttpAdaptersTest extends TestCase
     private function checkCommunication(ClientWrapper $vies)
     {
         $this->checkStatus($vies);
-        $this->checkVatNumber($vies);
+        $this->checkGoodVatNumber($vies);
+        $this->checkWrongCountryCode($vies);
     }
 
     private function checkStatus(ClientWrapper $vies)
@@ -98,7 +100,7 @@ class HttpAdaptersTest extends TestCase
         }
     }
 
-    private function checkVatNumber(ClientWrapper $vies)
+    private function checkGoodVatNumber(ClientWrapper $vies)
     {
         $request = new Vies\CheckVat\Request();
         $request->setCountryCode('IT')->setVatNumber('00159560366');
@@ -136,5 +138,18 @@ class HttpAdaptersTest extends TestCase
         $this->assertContains($response->getTraderPostalCodeMatch(), $matches);
         $this->assertContains($response->getTraderCityMatch(), $matches);
         $this->assertContains($response->getTraderCompanyTypeMatch(), $matches);
+    }
+
+    private function checkWrongCountryCode(ClientWrapper $vies)
+    {
+        $request = new Vies\CheckVat\Request('UA', '00159560366');
+        $exception = null;
+        try {
+            $vies->checkVatNumber($request);
+        } catch (RuntimeException $x) {
+            $exception = $x;
+        }
+        $this->assertNotNull($exception);
+        $this->assertContains('INVALID_INPUT', $exception->getMessage());
     }
 }

@@ -53,8 +53,13 @@ class Client
         if ($statusCode !== 200) {
             throw $this->buildResponseException($statusCode, $responseBody);
         }
+        $data = $this->decodeJson($responseBody);
+        if (isset($data['actionSucceed']) && $data['actionSucceed'] === false) {
+            $message = $this->unserializeFailureResponse($data);
+            throw new RuntimeException($message !== '' ? $message : 'Opertion failed');
+        }
 
-        return new CheckVat\Response($this->decodeJson($responseBody));
+        return new CheckVat\Response($data);
     }
 
     /**
@@ -141,25 +146,15 @@ class Client
         } catch (RuntimeException $x) {
             return null;
         }
-        if (!is_array($data) || !isset($data['errorWrappers']) || !is_array($data['errorWrappers'])) {
+        if (!is_array($data)) {
             return null;
         }
-        $lines = [];
-        foreach ($data['errorWrappers'] as $errorWrapper) {
-            if (!is_array($errorWrapper)) {
-                continue;
-            }
-            $errorCode = isset($errorWrapper['error']) && is_string($errorWrapper['error']) ? trim($errorWrapper['error']) : '';
-            $errorMessage = isset($errorWrapper['message']) && is_string($errorWrapper['message']) ? trim($errorWrapper['message']) : '';
-            if ($errorCode !== '' && $errorMessage !== '') {
-                $lines[] = "[{$errorCode}] {$errorMessage}";
-            } elseif ($errorCode !== '') {
-                $lines[] = "[{$errorCode}]";
-            } elseif ($errorMessage !== '') {
-                $lines[] = $errorMessage;
-            }
+        $message = $this->unserializeFailureResponse($data);
+        if ($message === '') {
+            return null;
         }
-        return $lines === [] ? null : new RuntimeException(implode("\n", $lines), $statusCode);
+
+        return new RuntimeException($message, $statusCode);
     }
 
     /**
@@ -188,5 +183,31 @@ class Client
     protected function getBaseUrl()
     {
         return static::DEFAULT_BASE_URL;
+    }
+
+    /**
+     * @return string
+     */
+    protected function unserializeFailureResponse(array $response)
+    {
+        if (!isset($response['errorWrappers']) || !is_array($response['errorWrappers'])) {
+            return '';
+        }
+        $lines = [];
+        foreach ($response['errorWrappers'] as $errorWrapper) {
+            if (!is_array($errorWrapper)) {
+                continue;
+            }
+            $errorCode = isset($errorWrapper['error']) && is_string($errorWrapper['error']) ? trim($errorWrapper['error']) : '';
+            $errorMessage = isset($errorWrapper['message']) && is_string($errorWrapper['message']) ? trim($errorWrapper['message']) : '';
+            if ($errorCode !== '' && $errorMessage !== '') {
+                $lines[] = "[{$errorCode}] {$errorMessage}";
+            } elseif ($errorCode !== '') {
+                $lines[] = "[{$errorCode}]";
+            } elseif ($errorMessage !== '') {
+                $lines[] = $errorMessage;
+            }
+        }
+        return implode("\n", $lines);
     }
 }

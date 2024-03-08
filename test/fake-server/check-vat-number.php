@@ -81,6 +81,17 @@ switch ((isset($data['countryCode']) ? $data['countryCode'] : '') . "\x01" . (is
             'traderCompanyTypeMatch' => 'NOT_PROCESSED',
         ]));
         break;
+    case "UA\x0100159560366":
+        header('Content-Type: application/json;charset=UTF-8');
+        die(json_encode([
+            'actionSucceed' => false,
+            'errorWrappers' => [
+                [
+                    'error' => 'INVALID_INPUT',
+                ]
+            ],
+        ]));
+        break;
 }
 http_response_code(499);
 die('Unrecognized test case');
