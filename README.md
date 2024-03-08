@@ -50,6 +50,15 @@ The code above may output:
 The VAT number IT-00159560366 is correct: it's assigned to the 'FERRARI S.P.A.' company
 ```
 
+## Country Codes
+
+VIES uses the [ISO-3166 country codes](https://www.iso.org/iso-3166-country-codes.html), with two exceptions:
+
+- Greece: the ISO 3166 country code is `GR`, the VIES country code is `EL`
+- Northern Ireland: after the brexit, VIES only supports the VAT codes of Northern Ireland (VIES identifies it with the `XI` code).
+
+You can use the methods provided `MLocati\Vies\CountryCodes` for conversions: see its well documented code for reference.
+
 ## Requirements
 
 This library works with any PHP version from 5.5 to the latest one (PHP 8.3 at the time of writing).
