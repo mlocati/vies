@@ -81,6 +81,27 @@ switch ((isset($data['countryCode']) ? $data['countryCode'] : '') . "\x01" . (is
             'traderCompanyTypeMatch' => 'NOT_PROCESSED',
         ]));
         break;
+    case "IT\x010015956036":
+        header('Content-Type: application/json;charset=UTF-8');
+        die(json_encode([
+            'countryCode' => 'IT',
+            'vatNumber' => '0015956036',
+            'requestDate' => $requestDate,
+            'valid' => false,
+            'requestIdentifier' => '',
+            'name' => '---',
+            'address' => '---',
+            'traderName' => '---',
+            'traderStreet' => '---',
+            'traderPostalCode' => '---',
+            'traderCity' => '---',
+            'traderCompanyType' => '---',
+            'traderNameMatch' => 'NOT_PROCESSED',
+            'traderStreetMatch' => 'NOT_PROCESSED',
+            'traderPostalCodeMatch' => 'NOT_PROCESSED',
+            'traderCityMatch' => 'NOT_PROCESSED',
+            'traderCompanyTypeMatch' => 'NOT_PROCESSED',
+        ]));
     case "UA\x0100159560366":
         header('Content-Type: application/json;charset=UTF-8');
         die(json_encode([
