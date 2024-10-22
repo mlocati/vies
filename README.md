@@ -1,3 +1,6 @@
+> [!CAUTION]
+> This project is deprecated: please use https://github.com/mlocati/vat-lib
+
 [![Tests](https://github.com/mlocati/vies/actions/workflows/tests.yml/badge.svg)](https://github.com/mlocati/vies/actions/workflows/tests.yml)
 
 # A PHP library to validate European VAT numbers with VIES VoW
